@@ -278,8 +278,8 @@ if (contactForm) {
         submitButton.disabled = true;
 
         try {
-            // Send to backend API
-            const response = await fetch('http://localhost:3000/api/contact', {
+            // Send to backend API (Vercel serverless function)
+            const response = await fetch('https://rinoka-karbon.vercel.app/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
