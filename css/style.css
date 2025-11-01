@@ -1366,3 +1366,39 @@ body {
         right: 10px;
     }
 }
+
+/* ============================================
+   CONTACT FORM MESSAGE STYLES
+   ============================================ */
+.form-message {
+    margin-top: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    display: none;
+    animation: slideIn 0.3s ease-out;
+}
+
+.form-message.success {
+    background: linear-gradient(135deg, #00ff88 0%, #00dd77 100%);
+    color: #0a0a0a;
+    border: 2px solid #00ff88;
+}
+
+.form-message.error {
+    background: linear-gradient(135deg, #ff5555 0%, #dd3333 100%);
+    color: white;
+    border: 2px solid #ff3333;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

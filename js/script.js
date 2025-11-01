@@ -25,69 +25,7 @@ if (hamburger) {
     });
 }
 
-// Contact Form Handling
-const contactForm = document.getElementById('contactForm');
-const formMessage = document.getElementById('formMessage');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        // Get form data
-        const formData = new FormData(contactForm);
-        const data = Object.fromEntries(formData);
-
-        // Basic validation
-        if (!data.name || !data.email || !data.subject || !data.message) {
-            showMessage('Please fill in all required fields.', 'error');
-            return;
-        }
-
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-            showMessage('Please enter a valid email address.', 'error');
-            return;
-        }
-
-        // Here you would normally send the data to a server
-        // For now, we'll just show a success message
-        console.log('Form data:', data);
-
-        showMessage('Thank you for your message! We will get back to you soon.', 'success');
-        contactForm.reset();
-
-        // In a real implementation, you would do something like:
-        /*
-        fetch('/api/contact', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            showMessage('Thank you for your message! We will get back to you soon.', 'success');
-            contactForm.reset();
-        })
-        .catch(error => {
-            showMessage('Sorry, there was an error sending your message. Please try again.', 'error');
-        });
-        */
-    });
-}
-
-function showMessage(message, type) {
-    formMessage.textContent = message;
-    formMessage.className = `form-message ${type}`;
-    formMessage.style.display = 'block';
-
-    // Hide message after 5 seconds
-    setTimeout(() => {
-        formMessage.style.display = 'none';
-    }, 5000);
-}
+// Contact Form Handling - Removed old version (now using backend integration below)
 
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -313,3 +251,73 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ============================================
+// CONTACT FORM SUBMISSION (Backend Integration)
+// ============================================
+
+const contactForm = document.getElementById('contactForm');
+const formMessage = document.getElementById('formMessage');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        // Get form data
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value || '',
+            message: document.getElementById('message').value
+        };
+
+        // Show loading state
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+
+        try {
+            // Send to backend API
+            const response = await fetch('http://localhost:3000/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Success!
+                formMessage.className = 'form-message success';
+                formMessage.textContent = '✅ ' + result.message;
+                formMessage.style.display = 'block';
+
+                // Reset form
+                contactForm.reset();
+
+                // Hide message after 5 seconds
+                setTimeout(() => {
+                    formMessage.style.display = 'none';
+                }, 5000);
+            } else {
+                // Error from server
+                formMessage.className = 'form-message error';
+                formMessage.textContent = '❌ ' + result.message;
+                formMessage.style.display = 'block';
+            }
+        } catch (error) {
+            // Network error or server down
+            console.error('Error sending form:', error);
+            formMessage.className = 'form-message error';
+            formMessage.textContent = '❌ Connection error. Please make sure the backend server is running or try again later.';
+            formMessage.style.display = 'block';
+        } finally {
+            // Restore button
+            submitButton.textContent = originalButtonText;
+            submitButton.disabled = false;
+        }
+    });
+}
