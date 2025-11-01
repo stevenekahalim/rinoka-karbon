@@ -1,0 +1,28 @@
+# Environment variables (NEVER push these to GitHub!)
+.env
+.env.local
+.env.production
+
+# API Keys and Secrets
+secrets/
+config/local.js
+
+# Dependencies
+node_modules/
+vendor/
+
+# System Files
+.DS_Store
+Thumbs.db
+*.log
+
+# Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build Output
+dist/
+build/
+.cache/
